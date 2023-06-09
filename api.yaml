@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-server
+spec:
+  selector:
+    matchLabels:
+      app: api-server
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: api-server
+    spec:
+      containers:
+      - name: api-server
+        image: nasey/noteworx:latest
+        ports:
+          - containerPort: 8000
+      - image: mongo:3.6
+        name: mongo-client
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          value: 'admin'
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          value: 'admin123'
+        - name: MONGO_INITDB_DATABASE
+          value: 'noteworx'
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-server
+spec:
+  selector:
+    app: api-server
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+      nodePort: 32001

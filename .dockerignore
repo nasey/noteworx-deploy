@@ -1,0 +1,4 @@
+# Exclude development and source control files
+.dockerignore
+.git
+node_modules

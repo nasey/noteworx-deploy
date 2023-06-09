@@ -1,0 +1,42 @@
+version: "3"
+networks:
+  sample_network:
+services:
+  # client:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfiles/DockerfileClient
+  #   ports:
+  #     - 8080:8080
+  #   networks:
+  #     - sample_network
+  #   depends_on:
+  #     - db
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfiles/DockerfileServer
+    ports:
+      - 8000:8000
+    networks:
+      - sample_network
+    depends_on:
+      - db
+  db:
+    image: mongo:3.6
+    ports:
+      - 27018:27017
+    networks:
+      - sample_network
+    volumes:
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin123
+      - MONGO_INITDB_DATABASE=noteworx
+  nginx:
+    build:
+      context: .
+      dockerfile: DockerfileNginx
+    ports:
+      - 8080:80
